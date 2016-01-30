@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.provider.MediaStore;
 //import android.app.ActivityManager;
+import android.widget.Toast;
+import android.content.Context;
 
 
 public class VolumeControl extends IntentService {
@@ -20,13 +22,17 @@ public class VolumeControl extends IntentService {
         ...
         // Do work here, based on the contents of dataString
         ...*/
-
+        AudioManager audioOutputManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         //while( /*volume limiter is enabled*/ ){
-        if (isBluetoothA2dpOn()  || AudioManager.isWiredHeadsetOn()) {
-          //while( /*audio exceeds threshold*/ ){
-            //AudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, );
+
+        Toast.makeText(this, "test if audioflux is running", Toast.LENGTH_LONG).show();
+        audioOutputManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER, 0);
+
+        //if (audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn()) {
+          //while( /*audio exceeds threshold*/  audioOutputManager.getStreamVolume(audioOutputManager.STREAM_MUSIC) ){
+            //audioOutputManager.setStreamVolume(audioOutputManager.STREAM_MUSIC, audioOutputManager.ADJUST_LOWER, 0);
           //}
-        }
+        //}
         //}
     }
 
