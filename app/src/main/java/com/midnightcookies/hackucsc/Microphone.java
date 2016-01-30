@@ -65,7 +65,7 @@ public class Microphone {
         }
     }
 
-    private void delteFile(){
+    private void deleteFile(){
         File sdcard = new File(file);
         sdcard.delete();
     }
