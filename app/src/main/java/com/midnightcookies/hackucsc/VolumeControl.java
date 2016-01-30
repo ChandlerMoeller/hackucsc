@@ -22,7 +22,7 @@ public class VolumeControl extends IntentService {
         ...*/
 
         //while( /*volume limiter is enabled*/ ){
-        if (isBluetoothA2dpOn() || AudioManager.isWiredHeadsetOn()) {
+        if (isBluetoothA2dpOn()  || AudioManager.isWiredHeadsetOn()) {
           //while( /*audio exceeds threshold*/ ){
             //AudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, );
           //}
