@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Intent VCServiceIntent = new Intent(this, VolumeControl.class);
+        startService(VCServiceIntent);
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.provider.MediaStore;
 import android.widget.Toast;
 import android.content.Context;
 
-
 public class VolumeControl extends IntentService {
 
     public VolumeControl(){
