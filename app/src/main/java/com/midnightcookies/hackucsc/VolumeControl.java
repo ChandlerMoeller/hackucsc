@@ -24,11 +24,11 @@ public class VolumeControl extends IntentService {
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
             if (SP.getBoolean("musicsharing_switch", false)) {
                 if (!(audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn())) {
-                    if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) >= SP.getInt("audio_list_max",5)) {
-                        audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, SP.getInt("audio_list_max",5), 0);
+                    if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) >= Integer.parseInt(SP.getString("audio_list_max","5"))) {
+                        audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, Integer.parseInt(SP.getString("audio_list_max", "5")), 0);
                     }
-                    if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) <= SP.getInt("audio_list_min",2)) {
-                        audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, SP.getInt("audio_list_min",2), 0);
+                    if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) <= Integer.parseInt(SP.getString("audio_list_min", "2"))) {
+                        audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, Integer.parseInt(SP.getString("audio_list_min", "2")), 0);
                     }
                 }
                 //Toast.makeText(this, "" + audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM), Toast.LENGTH_LONG).show();
