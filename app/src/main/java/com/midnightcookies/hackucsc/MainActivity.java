@@ -1,5 +1,8 @@
 package com.midnightcookies.hackucsc;
 
+import android.app.Application;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.IntentService;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +19,8 @@ import android.view.MenuItem;
 import android.app.IntentService;
 import android.content.Intent;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -61,6 +66,8 @@ public class MainActivity extends AppCompatActivity
         ParseObject testObject = new ParseObject("TestObject");
         testObject.put("foo", "bar");
         testObject.saveInBackground();
+
+        ParseObject moreTest = new ParseObject("AppInfo");
 
     }
 
@@ -130,6 +137,40 @@ public class MainActivity extends AppCompatActivity
 //
 //        }
 //    };
+
+
+    public static class ErrorDialogFragment extends DialogFragment {
+        private Dialog mDialog;
+
+        public ErrorDialogFragment(){
+            super();
+            mDialog = null;
+        }
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
+    }
+
+    private boolean serviceConnected(){
+
+       int resultsCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if(ConnectionResult.SUCCESS == resultsCode){
+            return true;
+        }else{
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultsCode, this, 0);
+            if(dialog != null){
+                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment();
+                errorDialogFragment.setDialog(dialog);
+                //errorDialogFragment.show(getSupportFragmentManager(), Application.APP);
+            }
+            return false;
+        }
+    }
 
 
 }

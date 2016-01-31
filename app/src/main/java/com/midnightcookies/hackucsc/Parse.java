@@ -1,12 +1,15 @@
 package com.midnightcookies.hackucsc;
 
+import com.parse.FindCallback;
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.lang.reflect.Array;
+import java.util.List;
 
 /**
  * Created by Brian on 1/30/16.
@@ -25,8 +28,6 @@ public class Parse extends ParseObject {
         GeoPoint = AGeoPoint;
        //Might Not Work Since We are using an array
         Genres = AGeres;
-
-
     }
 
     public String getUserName() {
@@ -60,4 +61,10 @@ public class Parse extends ParseObject {
     public void setGenres(Array genres) {
         Genres = genres;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
 }
