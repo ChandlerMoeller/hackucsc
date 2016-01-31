@@ -3,18 +3,16 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.midnightcookies.hackucsc.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.midnightcookies.hackucsc.SettingsActivity$General2PreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general" />
-
     <header
-        android:fragment="com.midnightcookies.hackucsc.SettingsActivity$NotificationPreferenceFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/pref_header_notifications" />
-
-    <header
-        android:fragment="com.midnightcookies.hackucsc.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.midnightcookies.hackucsc.SettingsActivity$MusicSharingPreferenceFragment"
         android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_data_sync" />
+        android:title="@string/pref_header_musicsharing" />
+    <header
+        android:fragment="com.midnightcookies.hackucsc.SettingsActivity$AudioFluxPreferenceFragment"
+        android:icon="@drawable/ic_sync_black_24dp"
+        android:title="@string/pref_header_audioflux" />
 
 </preference-headers>
