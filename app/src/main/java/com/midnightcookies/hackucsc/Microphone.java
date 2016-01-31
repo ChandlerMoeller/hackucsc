@@ -6,11 +6,13 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.TimerTask;
+import java.util.logging.Handler;
 
 /**
  * Created by Brian on 1/30/16.
  */
-public class Microphone {
+public class Microphone  {
     //SetAudioSource in order to store Audio file on phone.
     //Once done we should be able to call Amplitude.
 
@@ -69,6 +71,8 @@ public class Microphone {
         File sdcard = new File(file);
         sdcard.delete();
     }
+
+
 }
 
 

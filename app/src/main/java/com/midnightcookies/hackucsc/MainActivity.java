@@ -16,6 +16,11 @@ import android.view.MenuItem;
 import android.app.IntentService;
 import android.content.Intent;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
+import java.util.logging.Handler;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -46,6 +51,17 @@ public class MainActivity extends AppCompatActivity
 
         Intent VCServiceIntent = new Intent(this, VolumeControl.class);
         startService(VCServiceIntent);
+
+        // [Optional] Power your app with Local Datastore. For more info, go to
+        // https://parse.com/docs/android/guide#local-datastore
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this);
+
+        ParseObject testObject = new ParseObject("TestObject");
+        testObject.put("foo", "bar");
+        testObject.saveInBackground();
+
     }
 
     @Override
@@ -101,6 +117,19 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+//    private final static int INTERVAL = 1000* 60 *1; // 1 Every Minute
+//    Handler mHandler = new Handler() {
+//    }
+//    Microphone mic = new Microphone();
+//    Runnable mHandlerTask = new Runnable() {
+//        @Override
+//        public void run() {
+//            mic.startRecording();
+//            mHandler.postDelayed()
+//
+//        }
+//    };
 
 
 }

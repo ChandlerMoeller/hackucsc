@@ -3,16 +3,20 @@ package com.midnightcookies.hackucsc;
 import android.app.IntentService;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.HandlerThread;
 import android.provider.MediaStore;
 //import android.app.ActivityManager;
 import android.widget.Toast;
 import android.content.Context;
+
+import java.util.logging.Handler;
 
 public class VolumeControl extends IntentService {
 
     public VolumeControl(){
         super("VolumeControlIntentService");
     }
+
 
     @Override
     protected void onHandleIntent(Intent volumeIntent) {
@@ -25,7 +29,11 @@ public class VolumeControl extends IntentService {
         //while( /*volume limiter is enabled*/ ){
 
         Toast.makeText(this, "test if audioflux is running", Toast.LENGTH_LONG).show();
-        audioOutputManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER, 0);
+        audioOutputManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, 0);
+
+
+
+
 
         //if (audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn()) {
           //while( /*audio exceeds threshold*/  audioOutputManager.getStreamVolume(audioOutputManager.STREAM_MUSIC) ){
