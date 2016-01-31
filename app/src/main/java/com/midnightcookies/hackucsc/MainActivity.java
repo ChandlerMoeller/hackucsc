@@ -4,9 +4,11 @@ import android.app.Application;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.IntentService;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,12 +23,17 @@ import android.content.Intent;
 import android.os.Handler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    GoogleApiClient mGoogleApiClient = null;
+    Location mLastLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +85,34 @@ public class MainActivity extends AppCompatActivity
             }
         }, 150);
 
+
+
+
+
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+
+
+
     }
+
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -134,52 +168,32 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    private final static int INTERVAL = 1000* 60 *1; // 1 Every Minute
-//    Handler mHandler = new Handler() {
-//    }
-//    Microphone mic = new Microphone();
-//    Runnable mHandlerTask = new Runnable() {
-//        @Override
-//        public void run() {
-//            mic.startRecording();
-//            mHandler.postDelayed()
-//
-//        }
-//    };
 
+    //
+    //Location Services
+    //
 
-//    public static class ErrorDialogFragment extends DialogFragment {
-//        private Dialog mDialog;
-//
-//        public ErrorDialogFragment(){
-//            super();
-//            mDialog = null;
-//        }
-//        public void setDialog(Dialog dialog) {
-//            mDialog = dialog;
-//        }
-//
-//        @Override
-//        public Dialog onCreateDialog(Bundle savedInstanceState) {
-//            return mDialog;
-//        }
-//    }
+    @Override
+    public void onConnected(Bundle bundle) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        /*if (mLastLocation != null) {
+            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        }*/
+        Log.d("Location", String.valueOf(mLastLocation.getLatitude()));
+        Log.d("Location", String.valueOf(mLastLocation.getLongitude()));
+    }
 
-//    private boolean serviceConnected(){
-//
-//       int resultsCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-//        if(ConnectionResult.SUCCESS == resultsCode){
-//            return true;
-//        }else{
-//            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultsCode, this, 0);
-//            if(dialog != null){
-//                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment();
-//                errorDialogFragment.setDialog(dialog);
-//                //errorDialogFragment.show(getSupportFragmentManager(), Application.APP);
-//            }
-//            return false;
-//        }
-//    }
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
 
 
 }
