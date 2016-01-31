@@ -2,14 +2,12 @@ package com.midnightcookies.hackucsc;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.os.HandlerThread;
-import android.provider.MediaStore;
+import android.preference.PreferenceManager;
 //import android.app.ActivityManager;
 import android.widget.Toast;
 import android.content.Context;
-
-import java.util.logging.Handler;
 
 public class VolumeControl extends IntentService {
 
@@ -17,41 +15,28 @@ public class VolumeControl extends IntentService {
         super("VolumeControlIntentService");
     }
 
-
     @Override
     protected void onHandleIntent(Intent volumeIntent) {
-        /*// Gets data from the incoming Intent
-        String dataString = workIntent.getDataString();
-        ...
-        // Do work here, based on the contents of dataString
-        ...*/
+
         AudioManager audioOutputManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        //while( /*volume limiter is enabled*/ ){
 
-        Toast.makeText(this, "test if audioflux is running", Toast.LENGTH_LONG).show();
-        audioOutputManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, 0);
-
-
-
-
-
-        //if (audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn()) {
-          //while( /*audio exceeds threshold*/  audioOutputManager.getStreamVolume(audioOutputManager.STREAM_MUSIC) ){
-            //audioOutputManager.setStreamVolume(audioOutputManager.STREAM_MUSIC, audioOutputManager.ADJUST_LOWER, 0);
-          //}
-        //}
-        //}
-    }
-
-    /*public boolean isTaskRunning(String thisApp) {
-        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskInfo = activityManager.getRunningAppProcesses();
-        for(int i = 0; i < taskInfo.size(); i++){
-            if (taskInfo.get(i).processName.equals(thisApp)) {
-                return true;
+        //Toast.makeText(this, "test if audioflux is running"+audioOutputManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), Toast.LENGTH_LONG).show();
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+        //while(true) {
+            if (SP.getBoolean("example_switch", false)) {
+                if (!(audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn())) {
+                    if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) >= SP.getInt("audio_list_max",5)) {
+                        audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, SP.getInt("audio_list_max",5), 0);
+                    }
+                    if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) <= SP.getInt("audio_list_min",2)) {
+                        audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, SP.getInt("audio_list_min",2), 0);
+                    }
+                }
+                //Toast.makeText(this, "" + audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM), Toast.LENGTH_LONG).show();
             }
-        }
-        return false;
-    }*/
+        //}
+
+
+    }
 
 }
