@@ -18,12 +18,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Handler;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseObject;
+
+import java.util.logging.Handler;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -53,8 +54,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Intent VCServiceIntent = new Intent(this, VolumeControl.class);
-        //startService(VCServiceIntent);
+        Intent VCServiceIntent = new Intent(this, VolumeControl.class);
+        startService(VCServiceIntent);
 
         // [Optional] Power your app with Local Datastore. For more info, go to
         // https://parse.com/docs/android/guide#local-datastore
@@ -63,18 +64,9 @@ public class MainActivity extends AppCompatActivity
         Parse.initialize(this);
 
         ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
+        testObject.put("userName", "Chan");
+        testObject.put("songTitle", "FlyingHigh");
         testObject.saveInBackground();
-
-        final Handler loopVC = new Handler();
-        final Intent VCServiceIntent = new Intent(this, VolumeControl.class);
-
-        loopVC.postDelayed(new Runnable() {
-            public void run() {
-                loopVC.postDelayed(this, 300);
-                startService(VCServiceIntent);
-            }
-        }, 150);
 
         ParseObject moreTest = new ParseObject("AppInfo");
 
@@ -148,38 +140,38 @@ public class MainActivity extends AppCompatActivity
 //    };
 
 
-    /*public static class ErrorDialogFragment extends DialogFragment {
-        private Dialog mDialog;
+//    public static class ErrorDialogFragment extends DialogFragment {
+//        private Dialog mDialog;
+//
+//        public ErrorDialogFragment(){
+//            super();
+//            mDialog = null;
+//        }
+//        public void setDialog(Dialog dialog) {
+//            mDialog = dialog;
+//        }
+//
+//        @Override
+//        public Dialog onCreateDialog(Bundle savedInstanceState) {
+//            return mDialog;
+//        }
+//    }
 
-        public ErrorDialogFragment(){
-            super();
-            mDialog = null;
-        }
-        public void setDialog(Dialog dialog) {
-            mDialog = dialog;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return mDialog;
-        }
-    }
-
-    private boolean serviceConnected(){
-
-       int resultsCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if(ConnectionResult.SUCCESS == resultsCode){
-            return true;
-        }else{
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultsCode, this, 0);
-            if(dialog != null){
-                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment();
-                errorDialogFragment.setDialog(dialog);
-                //errorDialogFragment.show(getSupportFragmentManager(), Application.APP);
-            }
-            return false;
-        }
-    }*/
+//    private boolean serviceConnected(){
+//
+//       int resultsCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+//        if(ConnectionResult.SUCCESS == resultsCode){
+//            return true;
+//        }else{
+//            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultsCode, this, 0);
+//            if(dialog != null){
+//                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment();
+//                errorDialogFragment.setDialog(dialog);
+//                //errorDialogFragment.show(getSupportFragmentManager(), Application.APP);
+//            }
+//            return false;
+//        }
+//    }
 
 
 }
