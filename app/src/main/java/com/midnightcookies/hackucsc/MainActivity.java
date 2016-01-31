@@ -18,13 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Handler;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseObject;
-
-import java.util.logging.Handler;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,8 +53,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Intent VCServiceIntent = new Intent(this, VolumeControl.class);
-        startService(VCServiceIntent);
+        //Intent VCServiceIntent = new Intent(this, VolumeControl.class);
+        //startService(VCServiceIntent);
 
         // [Optional] Power your app with Local Datastore. For more info, go to
         // https://parse.com/docs/android/guide#local-datastore
@@ -66,6 +65,16 @@ public class MainActivity extends AppCompatActivity
         ParseObject testObject = new ParseObject("TestObject");
         testObject.put("foo", "bar");
         testObject.saveInBackground();
+
+        final Handler loopVC = new Handler();
+        final Intent VCServiceIntent = new Intent(this, VolumeControl.class);
+
+        loopVC.postDelayed(new Runnable() {
+            public void run() {
+                loopVC.postDelayed(this, 300);
+                startService(VCServiceIntent);
+            }
+        }, 150);
 
         ParseObject moreTest = new ParseObject("AppInfo");
 
@@ -139,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 //    };
 
 
-    public static class ErrorDialogFragment extends DialogFragment {
+    /*public static class ErrorDialogFragment extends DialogFragment {
         private Dialog mDialog;
 
         public ErrorDialogFragment(){
@@ -170,7 +179,7 @@ public class MainActivity extends AppCompatActivity
             }
             return false;
         }
-    }
+    }*/
 
 
 }

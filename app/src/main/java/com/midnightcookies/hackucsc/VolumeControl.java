@@ -23,7 +23,7 @@ public class VolumeControl extends IntentService {
         //Toast.makeText(this, "test if audioflux is running"+audioOutputManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), Toast.LENGTH_LONG).show();
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         //while(true) {
-            if (SP.getBoolean("example_switch", false)) {
+            if (SP.getBoolean("musicsharing_switch", false)) {
                 if (!(audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn())) {
                     if (audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM) >= SP.getInt("audio_list_max",5)) {
                         audioOutputManager.setStreamVolume(AudioManager.STREAM_SYSTEM, SP.getInt("audio_list_max",5), 0);
