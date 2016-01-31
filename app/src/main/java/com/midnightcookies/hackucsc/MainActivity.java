@@ -4,6 +4,9 @@ import android.app.Application;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +25,8 @@ import android.view.MenuItem;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
+import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -64,6 +69,21 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        IntentFilter iF = new IntentFilter();
+        iF.addAction("com.android.music.metachanged");
+        iF.addAction("com.htc.music.metachanged");
+        iF.addAction("fm.last.android.metachanged");
+        iF.addAction("com.sec.android.app.music.metachanged");
+        iF.addAction("com.nullsoft.winamp.metachanged");
+        iF.addAction("com.amazon.mp3.metachanged");
+        iF.addAction("com.miui.player.metachanged");
+        iF.addAction("com.real.IMP.metachanged");
+        iF.addAction("com.sonyericsson.music.metachanged");
+        iF.addAction("com.rdio.android.metachanged");
+        iF.addAction("com.samsung.sec.android.MusicPlayer.metachanged");
+        iF.addAction("com.andrew.apollo.metachanged");
+
+        registerReceiver(mReceiver, iF);
 
         // [Optional] Power your app with Local Datastore. For more info, go to
         // https://parse.com/docs/android/guide#local-datastore
@@ -219,4 +239,18 @@ public class MainActivity extends AppCompatActivity
             Log.e("Log_Tag", "" + recAmplitude);
         }
     }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            String cmd = intent.getStringExtra("command");
+            Log.v("tag ", action + " / " + cmd);
+            String artist = intent.getStringExtra("artist");
+            String album = intent.getStringExtra("album");
+            String track = intent.getStringExtra("track");
+            Log.v("tag", artist + ":" + album + ":" + track);
+            Toast.makeText(MainActivity.this, track, Toast.LENGTH_SHORT).show();
+        }
+    };
 }
