@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="audio_switch"
+        android:summary="@string/pref_description_social_recommendations"
+        android:title="@string/pref_title_social_recommendations" />
+
+    <ListPreference
+        android:title="Minimum Audio Threshold"
+        android:summary="This is a summary"
+        android:key="audio_list_min"
+        android:defaultValue="2"
+        android:entries="@array/thresholdvalues"
+        android:entryValues="@array/thresholdvalues"
+        android:dialogTitle="Minimum audio threshold"
+        android:persistent="true"
+        />
+
+    <ListPreference
+        android:title="Maximum Audio Threshold"
+        android:summary="This is a summary"
+        android:key="audio_list_max"
+        android:defaultValue="7"
+        android:entries="@array/thresholdvalues"
+        android:entryValues="@array/thresholdvalues"
+        android:dialogTitle="Maximum audio threshold"
+        android:persistent="true"
+        />
+</PreferenceScreen>
