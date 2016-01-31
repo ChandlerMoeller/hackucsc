@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.IntentService;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity
     GoogleApiClient mGoogleApiClient = null;
     Location mLastLocation = null;
 
+    protected Microphone ambienceMic;
+    protected boolean recording = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,31 +67,39 @@ public class MainActivity extends AppCompatActivity
 
         // [Optional] Power your app with Local Datastore. For more info, go to
         // https://parse.com/docs/android/guide#local-datastore
-        Parse.enableLocalDatastore(this);
+        //Parse.enableLocalDatastore(this);
 
-        Parse.initialize(this);
+        //Parse.initialize(this);
 
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("userName", "Chan");
-        testObject.put("songTitle", "FlyingHigh");
-        testObject.saveInBackground();
+        //ParseObject testObject = new ParseObject("TestObject");
+        //testObject.put("userName", "Chan");
+        //testObject.put("songTitle", "FlyingHigh");
+        //testObject.saveInBackground();
 
-        ParseObject moreTest = new ParseObject("AppInfo");
+        //ParseObject moreTest = new ParseObject("AppInfo");
 
-        final Handler loopVC = new Handler();
+        final Handler loopVolumeControl = new Handler();
         final Intent VCServiceIntent = new Intent(this, VolumeControl.class);
+        ambienceMic = new Microphone();
 
-        loopVC.postDelayed(new Runnable() {
+        loopVolumeControl.postDelayed(new Runnable() {
             public void run() {
-                loopVC.postDelayed(this, 300);
+                if (recording == true) {
+                    //ambienceMic.stopRecording();
+                    //ambienceMic.getFileName();
+                    //ambienceMic.deleteFile();
+                    recording = false;
+                }
+                ambienceMic.startRecording();
+                recording = true;
+                loopVolumeControl.postDelayed(this, 300);
                 startService(VCServiceIntent);
-
+                delayRecord delayRecord = new delayRecord();
+                delayRecord.execute();
             }
         }, 150);
 
-
-
-
+        ambienceMic.stopRecording();
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -97,9 +109,6 @@ public class MainActivity extends AppCompatActivity
                     .addOnConnectionFailedListener(this)
                     .build();
         }
-
-
-
     }
 
 
@@ -196,5 +205,18 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-}
 
+    public class delayRecord extends AsyncTask<String,Void,String>{
+        protected String doInBackground(String...params){
+            return Double.toString(ambienceMic.getAmplitude());
+        }
+
+        protected void onPostExecute(String strAmplitude){
+            double recAmplitude = Double.parseDouble(strAmplitude);
+            //ambienceMic.stopRecording();
+            //ambienceMic.getFileName();
+            //ambienceMic.deleteFile();
+            Log.e("Log_Tag", "" + recAmplitude);
+        }
+    }
+}

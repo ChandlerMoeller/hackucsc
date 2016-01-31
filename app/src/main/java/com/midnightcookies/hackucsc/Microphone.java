@@ -6,13 +6,14 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.TimerTask;
 import java.util.logging.Handler;
 
 /**
  * Created by Brian on 1/30/16.
  */
-public class Microphone  {
+public class Microphone {
     //SetAudioSource in order to store Audio file on phone.
     //Once done we should be able to call Amplitude.
 
@@ -21,6 +22,8 @@ public class Microphone  {
     String file;
 
     public Activity activity;
+
+
 
     public void startRecording() {
         if (recorder == null) {
@@ -39,8 +42,7 @@ public class Microphone  {
         }
     }
 
-
-    private void stopRecording() {
+    public void stopRecording() {
         if (recorder != null) {
             recorder.stop();
             recorder.release();
@@ -48,7 +50,7 @@ public class Microphone  {
         }
     }
 
-    private String getFileName() {
+    public String getFileName() {
         dir = new File("/sdcard", "AUDIOAMP");
         if (!dir.exists()) {
             dir.mkdirs();
@@ -57,7 +59,7 @@ public class Microphone  {
         return (file);
     }
 
-    private double getAmplitude() {
+    public double getAmplitude() {
         if (recorder != null) {
             double amp = recorder.getMaxAmplitude();
             return (amp);
@@ -67,7 +69,7 @@ public class Microphone  {
         }
     }
 
-    private void deleteFile(){
+    public void deleteFile(){
         File sdcard = new File(file);
         sdcard.delete();
     }
