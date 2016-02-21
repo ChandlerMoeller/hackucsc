@@ -3,8 +3,8 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="audio_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:summary="@string/pref_description_audioflux_switch"
+        android:title="@string/pref_title_audioflux_switch" />
 
     <ListPreference
         android:title="Minimum Audio Threshold"

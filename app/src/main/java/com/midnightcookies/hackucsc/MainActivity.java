@@ -7,9 +7,11 @@ import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -31,8 +33,29 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.parse.FunctionCallback;
+import com.parse.Parse;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+
+import android.provider.Settings.Secure;
+
+import org.json.JSONArray;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
+
+import org.json.JSONArray;
+
+import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity
@@ -41,7 +64,18 @@ public class MainActivity extends AppCompatActivity
     GoogleApiClient mGoogleApiClient = null;
     Location mLastLocation = null;
 
-    protected Microphone ambienceMic;
+    /*Array Genres = null;
+    String songTitle = null;
+    String userName = null;*/
+    String[] Genres = {"rock1", "rock2"};
+    JSONArray json = new JSONArray(Arrays.asList(Genres));
+
+    String songTitle = "Never Gonna Give You Up";
+    String userName = "Anonymous";
+
+    ///protected Microphone ambienceMic;
+    protected Microphone ambienceMic = new Microphone();
+
     protected boolean recording = false;
 
     @Override
@@ -50,6 +84,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Log.e("STATUS", "onCreate");
+
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = SP.edit();
+        editor.putInt("prevamp", 0);
+        editor.commit();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +110,13 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /*//Initialize Parse
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this);*/
+
         IntentFilter iF = new IntentFilter();
+
+        iF.addAction("com.spotify.music.metadatachanged");
         iF.addAction("com.android.music.metachanged");
         iF.addAction("com.htc.music.metachanged");
         iF.addAction("fm.last.android.metachanged");
@@ -83,43 +130,21 @@ public class MainActivity extends AppCompatActivity
         iF.addAction("com.samsung.sec.android.MusicPlayer.metachanged");
         iF.addAction("com.andrew.apollo.metachanged");
 
+        iF.addAction("com.spotify.android.music.metadatachanged");
+
+        //iF.addAction("com.spotify.music.queuechanged");
+        //iF.addAction("com.spotify.music");
+        //iF.addAction("com.spotify.mobile.android.metadatachanged");
+
         registerReceiver(mReceiver, iF);
 
-        // [Optional] Power your app with Local Datastore. For more info, go to
-        // https://parse.com/docs/android/guide#local-datastore
-        //Parse.enableLocalDatastore(this);
 
-        //Parse.initialize(this);
+        ///final Intent VCServiceIntent = new Intent(this, VolumeControl.class);
+        ///ambienceMic = new Microphone();
 
-        //ParseObject testObject = new ParseObject("TestObject");
-        //testObject.put("userName", "Chan");
-        //testObject.put("songTitle", "FlyingHigh");
-        //testObject.saveInBackground();
+        loop();
 
-        //ParseObject moreTest = new ParseObject("AppInfo");
-
-        final Handler loopVolumeControl = new Handler();
-        final Intent VCServiceIntent = new Intent(this, VolumeControl.class);
-        ambienceMic = new Microphone();
-
-        loopVolumeControl.postDelayed(new Runnable() {
-            public void run() {
-                if (recording == true) {
-                    //ambienceMic.stopRecording();
-                    //ambienceMic.getFileName();
-                    //ambienceMic.deleteFile();
-                    recording = false;
-                }
-                ambienceMic.startRecording();
-                recording = true;
-                loopVolumeControl.postDelayed(this, 300);
-                startService(VCServiceIntent);
-                delayRecord delayRecord = new delayRecord();
-                delayRecord.execute();
-            }
-        }, 150);
-
-        ambienceMic.stopRecording();
+        //ambienceMic.stopRecording();
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -131,15 +156,47 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onDestroy() {
+        Log.e("STATUS", "onDestroy");
+        unregisterReceiver(mReceiver);
+        ////ambienceMic.stopRecording();
 
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
     protected void onStart() {
+        Log.e("STATUS", "onStart");
         mGoogleApiClient.connect();
+
         super.onStart();
     }
 
+    @Override
     protected void onStop() {
+        Log.e("STATUS", "onStop");
+        //ambienceMic.stopRecording();
+        //ambienceMic.pauseRecording();
         mGoogleApiClient.disconnect();
         super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Log.e("STATUS", "onPause");
+        //ambienceMic.pauseRecording();
+        //ambienceMic.stopRecording();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.e("STATUS", "onResume");
     }
 
 
@@ -169,6 +226,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intentsettings = new Intent(this, SettingsActivity.class);
+            startActivity(intentsettings);
             return true;
         }
 
@@ -187,8 +246,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
-            Intent intentsettings = new Intent(this, SettingsActivity.class);
+        } else if (id == R.id.nav_settings) {
+            Intent intentsettings = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intentsettings);
         }
 
@@ -201,17 +260,60 @@ public class MainActivity extends AppCompatActivity
     //
     //Location Services
     //
-
     @Override
     public void onConnected(Bundle bundle) {
+        //Get last known location
+        //TODO: replace last known location with location updates
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        /*if (mLastLocation != null) {
-            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-        }*/
-        Log.d("Location", String.valueOf(mLastLocation.getLatitude()));
-        Log.d("Location", String.valueOf(mLastLocation.getLongitude()));
+        //TODO: if (mLastLocation != null) {
+
+        Log.d("Location (Latitude)", String.valueOf(mLastLocation.getLatitude()));
+        Log.d("Location (Longitude)", String.valueOf(mLastLocation.getLongitude()));
+
+
+        //
+        //Make New Object
+        //
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+        userName = SP.getString("musicsharing_username", "Anonymous");
+        ParseObject info = new ParseObject("Info");
+        String android_id = Secure.getString(this.getContentResolver(),
+                Secure.ANDROID_ID);
+        info.put("identifier", android_id);
+        info.put("latitude", mLastLocation.getLatitude());
+        info.put("longitude", mLastLocation.getLongitude());
+        ParseGeoPoint point = new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        info.put("locationpoint", point);
+        info.put("Genres", json);
+        info.put("songTitle", songTitle);
+        info.put("userName", userName);
+        info.saveInBackground();
+
+
+        //TODO: if (mLastLocation != null) {
+        //
+        //Get Close Objects
+        //
+        //Get parameters to pass to parsecloud server
+        HashMap<String, ParseGeoPoint> GetCloseObjectsOurHash = new HashMap<>();
+        ParseGeoPoint point2 = new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        GetCloseObjectsOurHash.put("clientGeoPoint", point2);
+        //Get Results from cloudlocation function
+        ParseCloud.callFunctionInBackground("GetCloseObjects", GetCloseObjectsOurHash, new FunctionCallback<ArrayList>() {
+                    @Override
+                    public void done(ArrayList object, ParseException e) {
+                        if (object != null) {
+                            int objectsize = object.size();
+                            for (int i = 0; i < objectsize; i++) {
+                                Log.d("Location: ", String.valueOf(object.get(i)));
+                            }
+                        }
+                    }
+                }
+        );
+        //
+
     }
 
     @Override
@@ -224,19 +326,55 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void loop() {
+        final Handler loopVolumeControl = new Handler();
+        loopVolumeControl.postDelayed(new Runnable() {
+            public void run() {
+                ///if (recording == true) {
+                //ambienceMic.stopRecording();
+                //ambienceMic.getFileName();
+                //ambienceMic.deleteFile();
+                ///recording = false;
+                ///}
+                ///ambienceMic.startRecording();
+                ///recording = true;
+
+                //Every 3 seconds
+                loopVolumeControl.postDelayed(this, 2000);
+                ///loopVolumeControl.postDelayed(this, 300);
+                ///Log.d("Test", "start service reached");
+                ///startService(VCServiceIntent);
 
 
-    public class delayRecord extends AsyncTask<String,Void,String>{
-        protected String doInBackground(String...params){
+                delayRecord delayRecord = new delayRecord();
+                delayRecord.execute();
+            }
+        }, 150);
+    }
+
+    public class delayRecord extends AsyncTask<String, Void, String> {
+        final Intent VCServiceIntent = new Intent(MainActivity.this, VolumeControl.class);
+
+        protected String doInBackground(String... params) {
+            ambienceMic.startRecording();
+            recording = true;
             return Double.toString(ambienceMic.getAmplitude());
         }
 
-        protected void onPostExecute(String strAmplitude){
-            double recAmplitude = Double.parseDouble(strAmplitude);
+        protected void onPostExecute(String strAmplitude) {
+            double recAmplitudedouble = Double.parseDouble(strAmplitude);
+            int recAmplitude = (int)recAmplitudedouble;
             //ambienceMic.stopRecording();
             //ambienceMic.getFileName();
             //ambienceMic.deleteFile();
-            Log.e("Log_Tag", "" + recAmplitude);
+
+            ////Log.d("Amplitude", "" + recAmplitude);
+            Bundle b = new Bundle();
+            b.putInt("amplitude", recAmplitude);
+            VCServiceIntent.putExtras(b);
+            startService(VCServiceIntent);
+
+            ////ambienceMic.pauseRecording();
         }
     }
 
@@ -245,11 +383,11 @@ public class MainActivity extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             String cmd = intent.getStringExtra("command");
-            Log.v("tag ", action + " / " + cmd);
+            Log.v("msidentity_tag ", action + " / " + cmd);
             String artist = intent.getStringExtra("artist");
             String album = intent.getStringExtra("album");
             String track = intent.getStringExtra("track");
-            Log.v("tag", artist + ":" + album + ":" + track);
+            Log.v("msidentity_tag", artist + ":" + album + ":" + track);
             Toast.makeText(MainActivity.this, track, Toast.LENGTH_SHORT).show();
         }
     };

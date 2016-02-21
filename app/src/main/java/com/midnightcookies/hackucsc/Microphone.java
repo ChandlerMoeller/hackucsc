@@ -34,20 +34,43 @@ public class Microphone {
             recorder.setOutputFile(getFileName()); //Create a func to write on sd card
             try {
                 recorder.prepare();
-            } catch (IOException e) {
+            /*} catch (IOException e ) {
                 //Generate a stackTrace if fail
                 Log.e("Log_Tag", "prepare() failed");
+            }*/
+
+                //Test
+            } catch (IllegalStateException e) {
+                throw new RuntimeException(
+                        "IllegalStateException on MediaRecorder.prepare", e);
+            } catch (IOException e) {
+                throw new RuntimeException("IOException on MediaRecorder.prepare", e);
             }
-            recorder.start();
+            //End Test
+
+            try {
+                Log.e("STATUS", "recorder.start");
+                recorder.start();
+            } catch (IllegalStateException e) {
+                throw new RuntimeException(
+                        "IllegalStateException on MediaRecorder.start", e);
+            }
         }
     }
 
     public void stopRecording() {
-        if (recorder != null) {
+        ///if (recorder != null) {
             recorder.stop();
             recorder.release();
-            recorder = null;
-        }
+            ///recorder = null;
+        ///}
+    }
+
+    public void pauseRecording() {
+        ///if (recorder != null) {
+            recorder.reset();
+            //recorder = null;
+        ///}
     }
 
     public String getFileName() {
@@ -55,21 +78,22 @@ public class Microphone {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        file = dir.getAbsolutePath() + "/" + System.currentTimeMillis() + ".mp3";
+        //file = dir.getAbsolutePath() + "/" + System.currentTimeMillis() + ".mp3";
+        file = dir.getAbsolutePath() + "/" + "test" + ".mp3";
         return (file);
     }
 
     public double getAmplitude() {
-        if (recorder != null) {
+        ///if (recorder != null) {
             double amp = recorder.getMaxAmplitude();
             return (amp);
-        } else {
+        ///} else {
 
-            return 0;
-        }
+            ///return 0;
+        ///}
     }
 
-    public void deleteFile(){
+    public void deleteFile() {
         File sdcard = new File(file);
         sdcard.delete();
     }

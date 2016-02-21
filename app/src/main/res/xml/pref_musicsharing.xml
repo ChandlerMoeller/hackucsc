@@ -3,8 +3,8 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="musicsharing_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:summary="@string/pref_description_musicsharing_switch"
+        android:title="@string/pref_title_musicsharing_switch" />
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
