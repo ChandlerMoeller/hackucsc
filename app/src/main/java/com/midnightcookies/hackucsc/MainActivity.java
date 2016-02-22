@@ -1,9 +1,5 @@
 package com.midnightcookies.hackucsc;
 
-import android.app.Application;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -24,17 +20,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.parse.FunctionCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -44,18 +37,9 @@ import android.provider.Settings.Secure;
 
 import org.json.JSONArray;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
-import com.parse.Parse;
-import com.parse.ParseObject;
-import com.parse.SaveCallback;
-
-import org.json.JSONArray;
-
-import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity
@@ -65,13 +49,17 @@ public class MainActivity extends AppCompatActivity
     Location mLastLocation = null;
 
     /*Array Genres = null;
-    String songTitle = null;
+    String Global_songTitle = null;
     String userName = null;*/
     String[] Genres = {"rock1", "rock2"};
     JSONArray json = new JSONArray(Arrays.asList(Genres));
 
-    String songTitle = "Never Gonna Give You Up";
+    String Global_songTitle;
+    String Global_songAlbum;
+    String Global_songArtist;
     String userName = "Anonymous";
+    Boolean havelocation = false;
+    int GetDistance = 5;
 
     ///protected Microphone ambienceMic;
     protected Microphone ambienceMic = new Microphone();
@@ -132,9 +120,10 @@ public class MainActivity extends AppCompatActivity
 
         iF.addAction("com.spotify.android.music.metadatachanged");
 
-        //iF.addAction("com.spotify.music.queuechanged");
-        //iF.addAction("com.spotify.music");
-        //iF.addAction("com.spotify.mobile.android.metadatachanged");
+        iF.addAction("com.spotify.music.queuechanged");
+        iF.addAction("com.spotify.music");
+        iF.addAction("com.spotify.mobile.android.queuechanged");
+        iF.addAction("com.spotify.music.android.playbackstatechanged");
 
         registerReceiver(mReceiver, iF);
 
@@ -266,29 +255,11 @@ public class MainActivity extends AppCompatActivity
         //TODO: replace last known location with location updates
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        havelocation = true;
         //TODO: if (mLastLocation != null) {
 
         Log.d("Location (Latitude)", String.valueOf(mLastLocation.getLatitude()));
         Log.d("Location (Longitude)", String.valueOf(mLastLocation.getLongitude()));
-
-
-        //
-        //Make New Object
-        //
-        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
-        userName = SP.getString("musicsharing_username", "Anonymous");
-        ParseObject info = new ParseObject("Info");
-        String android_id = Secure.getString(this.getContentResolver(),
-                Secure.ANDROID_ID);
-        info.put("identifier", android_id);
-        info.put("latitude", mLastLocation.getLatitude());
-        info.put("longitude", mLastLocation.getLongitude());
-        ParseGeoPoint point = new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        info.put("locationpoint", point);
-        info.put("Genres", json);
-        info.put("songTitle", songTitle);
-        info.put("userName", userName);
-        info.saveInBackground();
 
 
         //TODO: if (mLastLocation != null) {
@@ -299,6 +270,9 @@ public class MainActivity extends AppCompatActivity
         HashMap<String, ParseGeoPoint> GetCloseObjectsOurHash = new HashMap<>();
         ParseGeoPoint point2 = new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         GetCloseObjectsOurHash.put("clientGeoPoint", point2);
+        //GetCloseObjectsOurHash.put("clientLatitude", mLastLocation.getLatitude());
+        //GetCloseObjectsOurHash.put("clientLongitude", mLastLocation.getLongitude());
+        //GetCloseObjectsOurHash.put("clientGetDistance", GetDistance);
         //Get Results from cloudlocation function
         ParseCloud.callFunctionInBackground("GetCloseObjects", GetCloseObjectsOurHash, new FunctionCallback<ArrayList>() {
                     @Override
@@ -363,7 +337,7 @@ public class MainActivity extends AppCompatActivity
 
         protected void onPostExecute(String strAmplitude) {
             double recAmplitudedouble = Double.parseDouble(strAmplitude);
-            int recAmplitude = (int)recAmplitudedouble;
+            int recAmplitude = (int) recAmplitudedouble;
             //ambienceMic.stopRecording();
             //ambienceMic.getFileName();
             //ambienceMic.deleteFile();
@@ -387,8 +361,35 @@ public class MainActivity extends AppCompatActivity
             String artist = intent.getStringExtra("artist");
             String album = intent.getStringExtra("album");
             String track = intent.getStringExtra("track");
+            Global_songTitle = track;
+            Global_songAlbum = album;
+            Global_songArtist = artist;
             Log.v("msidentity_tag", artist + ":" + album + ":" + track);
             Toast.makeText(MainActivity.this, track, Toast.LENGTH_SHORT).show();
+
+            if (havelocation == true) {
+                sharemusic();
+            }
         }
     };
+
+
+    public void sharemusic() {
+        //
+        //Make New Object
+        //
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+        userName = SP.getString("musicsharing_username", "Anonymous");
+        ParseObject info = new ParseObject("Info");
+        String android_id = Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
+        info.put("identifier", android_id);
+        ParseGeoPoint point = new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        info.put("locationpoint", point);
+        info.put("Genres", json);
+        info.put("songTitle", Global_songTitle);
+        info.put("songAlbum", Global_songAlbum);
+        info.put("songArtist", Global_songArtist);
+        info.put("userName", userName);
+        info.saveInBackground();
+    }
 }

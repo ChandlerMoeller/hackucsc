@@ -43,11 +43,11 @@ public class VolumeControl extends IntentService {
 
         if (SP.getBoolean("audio_switch", false)) {
             if ((audioOutputManager.isBluetoothA2dpOn() || audioOutputManager.isWiredHeadsetOn())) {
-                if (currentvolume > pref_max) {
+                if (currentvolume > pref_max + 1) {
                     //Log.e("status3", ">= Integer.parseInt(SP.getString(audio_list_max, 5)");
                     audioOutputManager.setStreamVolume(AudioManager.STREAM_MUSIC, pref_max, 0);
                     currentvolume = pref_max;
-                } else if (currentvolume < pref_min) {
+                } else if (currentvolume < pref_min + 1) {
                     //Log.e("status3", "<= Integer.parseInt(SP.getString(audio_list_min, 2)");
                     audioOutputManager.setStreamVolume(AudioManager.STREAM_MUSIC, pref_min, 0);
                     currentvolume = pref_min;
@@ -103,8 +103,8 @@ public class VolumeControl extends IntentService {
 
 
 
-                int maxvol = audioOutputManager.getStreamMaxVolume(audioOutputManager.STREAM_MUSIC);
-                Log.d("maxaudiolevel", "max volume: " + maxvol);
+                ///int maxvol = audioOutputManager.getStreamMaxVolume(audioOutputManager.STREAM_MUSIC);
+                ///Log.d("maxaudiolevel", "max volume: " + maxvol);
             }
             //Toast.makeText(this, "" + audioOutputManager.getStreamVolume(AudioManager.STREAM_SYSTEM), Toast.LENGTH_LONG).show();
         }
