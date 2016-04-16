@@ -11,4 +11,5 @@ interruption. Similarly, with a quiet background or no background noise the app 
 
 #2) Sharing your music tastes with those around you
 Imagine sitting in a lecture hall, walking to class or even eating at a dining hall and wondering what your peers are currently listening to. Well, this app will allow you to do that and even allows you to optionally share and see a person's favorite genres along with the song information. This makes finding new music you enjoy as easy as ever by allowing you to see what others with similar music interests are listening to.
+
 When this feature is on this app will detect what song you are currently listening to and upload it to the cloud along with the album, artist and optionally your favorite genres and a username. In addition, location is also needed and sent to the server bundled with the other information, in what we call Ghost Trails, so that it can be shared locally with those around you. Your phone will retrieve all the Ghost Trails within a set distance from you by other users via the cloud. 
